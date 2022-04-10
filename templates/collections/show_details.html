@@ -1,0 +1,38 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h1>{{ collection.name }}</h1>
+<h6>{{ collection.description }}</h6>
+    {% if not collection.saved_recipes %}
+        <p>You haven't added any recipes to this collection at the moment. </p>
+        <p>Search recipes at the top and add them to your favourites!</p>  
+    {% else %}
+    <div class="row">
+        
+        {% for recipe in collection.saved_recipes %}
+        <div class="col-3 my-5">
+            <p>
+                <a href="/recipes/show/{{ recipe.recipe_id }}">
+                    <img src="{{ recipe.image_url }}" width="250px" height="190px">
+                </a>
+            </p>
+            <div>
+                <a href="/recipes/show/{{ recipe.recipe_id }}">{{ recipe.title }}</a>
+            </div>
+            <div>
+                {% if recipe.rating != 'Not rated yet' %}
+                    {% for star in range(recipe.rating|int) %}
+                    <span><i class="fa-solid fa-star"></i></span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        
+    </div>
+    {% endif %}
+
+
+
+{% endblock %}

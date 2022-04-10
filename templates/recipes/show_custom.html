@@ -1,0 +1,60 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h2>
+    {{ recipe.title }}
+    {% if recipe.made %}
+        <i class="fa-solid fa-circle-check"></i> 
+    {% endif %}
+</h2>
+
+<p>
+    Prep Time: {{ recipe.time }} min | Servings: {{ recipe.servings }} 
+</p>
+
+<p>
+    Your Rating: 
+    {% if recipe.rating != 'Not rated yet' %}
+        {% for star in range(recipe.rating|int) %}
+        <span><i class="fa-solid fa-star"></i></span>
+        {% endfor %}
+    {% else %}
+        {{ recipe.rating }}
+    {% endif %}
+</p>
+
+<p>
+    {% if g.user.id == recipe.user_id %}
+    <form method="POST" action="/recipes/custom/delete/{{ recipe.id }}">
+        <a href="/recipes/custom/edit/{{ recipe.id }}" class="btn btn-secondary">Edit</a>
+        <button class="btn btn-danger">Delete</button>
+    </form>
+    {% endif %}
+</p>
+
+<p>
+    <img src="{{ recipe.image_url }}">
+</p>
+
+<p>
+    <h3>Ingredients:</h3>
+    <p style="white-space: pre-wrap;">{{ recipe.ingredients }}</p>
+
+</p>
+
+<p>
+    <h3>Instructions:</h3>
+    <p style="white-space: pre-wrap;">{{ recipe.instructions }}</p>
+
+</p>
+
+
+
+<p>
+    <h3>Your Notes:</h3>
+    <p style="white-space: pre-wrap;">{{ recipe.notes }}</p>
+</p>
+
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h1>Search Results</h1>
+
+{% if errors %} 
+    <p>{{ errors }}</p>
+{% endif %}
+
+{% if results %} 
+    <p>
+        Your search: {{ search }}
+    </p>
+    <p>
+        Total results: {{ total }}
+    </p>
+    
+    <div class="row">
+        {% for item in results %}
+        <div class="col-3 my-5">
+            <p>
+                <img src="{{ item['image'] }}" width="250px" height="190px">
+            </p>
+            <p>
+                <a href="/recipes/show/{{ item['id'] }}">{{ item['title'] }}</a>
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+ 
+    
+
+{% endif %}
+
+{% endblock %}

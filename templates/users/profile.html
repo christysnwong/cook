@@ -1,0 +1,109 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+    <h1>My Profile</h1>
+
+    <!-- <p>
+        <b>Username:</b> {{ user.username }}
+    </p>
+
+    <p>
+        <b>Email:</b> {{ user.email }}
+    </p>
+
+    <p>
+        <b>Name:</b> {{ user.first_name }} {{ user.last_name }}
+    </p>
+
+    <p>
+        <b>Measuring Unit:</b> {{ user.measures }}
+    </p>
+
+    <p>
+        <b>Experience:</b> 
+        {% if user.exp > 60 %}
+            Max
+        {% else %}
+            {{ user.exp }}
+        {% endif %}
+    </p>
+
+    <p>
+        <b>Title:</b> {{ user.title }}
+    </p> -->
+    <p>
+        <div class="row">
+            <div class = "col-3">
+                <p>
+                    <b>Username:</b>
+                </p>
+                <p>
+                    <b>Email:</b> 
+                </p>
+                <p>
+                    <b>Name:</b> 
+                </p>
+                <p>
+                    <b>Measuring Unit:</b> 
+                </p>
+                <p>
+                    <b>Experience:</b> 
+                </p>
+                <p>
+                    <b>Title:</b>
+                </p>
+                <p>
+                    {% if user.title != "Cooking Master" %}
+                        <b>Progress to Next Level:</b>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-3">
+                <p>
+                    {{ user.username }}
+                </p>
+                <p>
+                    {{ user.email }}
+                </p>
+                <p>
+                    {{ user.first_name }} {{ user.last_name }}
+                </p>
+                <p>
+                    {{ user.measures }}
+                </p>
+                <p>
+                    {% if user.exp > 60 %}
+                        Max
+                    {% else %}
+                        {{ user.exp }}
+                    {% endif %}
+                </p>
+                <p>
+                    {{ user.title }}
+                </p>
+                <p>
+                    {% if user.title != "Cooking Master" %}
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    {% endif %}
+                </p>
+            </div>
+
+        </div>
+    </p>
+
+    <form>
+        <button class="btn btn-danger"
+                formaction="/users/{{ user.id }}/delete"
+                formmethod="POST">Delete Account
+        </button>
+        <button class="btn btn-primary"
+            formaction="/users/{{ user.id }}/edit"
+            formmethod="GET">Edit My Profile
+    </button>
+    </form>
+
+
+{% endblock %}

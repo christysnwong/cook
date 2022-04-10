@@ -1,0 +1,44 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h2>My Collections</h2>
+
+
+<div class="row">
+    {% for collection in collections %}
+    <div class="col-3">
+        
+        <div class="card my-4" style="width: 16rem;">
+            <div class="card-body">
+                <h5 class="card-title text-info">
+                    <a href="/collections/show/{{ collection.id }}">{{ collection.name }}</a>
+                    
+                </h5>
+
+                <p class="card-text">
+                    {{ collection.description }}
+                </p>
+
+                <p>
+                    Recipes: {{ collection.saved_recipes|length }}
+                </p>
+                
+                {% if collection.name != "Favourites" %}
+                <form style="display:inline;" action="/collections/delete/{{ collection.id }}" method="POST">
+                    
+                    <a href="/collections/edit/{{ collection.id }}" class="btn btn-sm btn-info"><i class="fas fa-pen-alt"></i></a>
+                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                    
+                </form>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+{% endblock %}
