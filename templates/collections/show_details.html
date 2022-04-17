@@ -2,12 +2,14 @@
 
 {% block content %}
 
-<h1>{{ collection.name }}</h1>
+<h1>{{ collection.name }} Collection</h1>
 <h6>{{ collection.description }}</h6>
+    <p>
     {% if not collection.saved_recipes %}
         <p>You haven't added any recipes to this collection at the moment. </p>
         <p>Search recipes at the top and add them to your favourites!</p>  
     {% else %}
+    </p>
     <div class="row">
         
         {% for recipe in collection.saved_recipes %}

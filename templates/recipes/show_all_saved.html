@@ -2,41 +2,54 @@
 
 {% block content %}
 
-<h1>My Saved Recipes</h1>
+<h1>Saved Recipes</h1>
     {% if not saved_recipes %}
         <p>You don't have any saved recipes at the moment. </p>
         <p>Search recipes at the top and add them to your favourites!</p>  
     {% else %}
-    <div class="row">
-        
-        {% for recipe in saved_recipes %}
-        <div class="col-3 my-5">
-            <p>
-                <a href="/recipes/show/{{ recipe.recipe_id }}">
-                    <img src="{{ recipe.image_url }}" width="250px" height="190px">
-                </a>
-            </p>
-            <div>
-                <a href="/recipes/show/{{ recipe.recipe_id }}">{{ recipe.title }}</a>
+        <p>
+            Sort by: Title
+        </p>
+        <div class="row">
+            
+            {% for recipe in saved_recipes %}
+                
+            <div class="col-3 my-3">
+                <p>
+                    <a href="/recipes/show/{{ recipe.recipe_id }}">
+                        <img src="{{ recipe.image_url }}" width="250px" height="190px">
+                    </a>
+                </p>
+                <div>
+                    <a href="/recipes/show/{{ recipe.recipe_id }}"><b>{{ recipe.title }}</b></a>
+                    {% if recipe.made %}
+                        <i class="fa-solid fa-circle-check"></i> 
+                    {% endif %}
+                </div>
+                <div>
+                    {% if recipe.rating != 'Not rated yet' %}
+                        {% for star in range(recipe.rating|int) %}
+                        <span><i class="fa-solid fa-star"></i></span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    {% if recipe.collections %}
+                        {% if recipe.collections|length > 1 %}
+                            Collections:
+                        {% else %}
+                            Collection:
+                        {% endif %}
+                        {% for collection in recipe.collections %}
+                            <a href="/collections/show/{{ collection.id }}" class="badge bg-warning">{{ collection.name }}</a>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
             </div>
-            <div>
-                {% if recipe.rating != 'Not rated yet' %}
-                    {% for star in range(recipe.rating|int) %}
-                    <span><i class="fa-solid fa-star"></i></span>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <div>
-                {% if recipe.collections %}
-                    {% for collection in recipe.collections %}
-                        <a href="/collections/show/{{ collection.id }}" class="badge bg-warning">{{ collection.name }}</a>
-                    {% endfor %}
-                {% endif %}
-            </div>
+            {% endfor %}
+            
         </div>
-        {% endfor %}
-        
-    </div>
     {% endif %}
 
 {% endblock %}

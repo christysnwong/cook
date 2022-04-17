@@ -43,8 +43,8 @@ class CustomRecipeForm(FlaskForm):
     title = StringField('Recipe Title', validators=[InputRequired()])
     ingredients = TextAreaField('Ingredients', render_kw={'rows': 10}, validators=[InputRequired()])
     instructions = TextAreaField('Instructions', render_kw={'rows': 10}, validators=[InputRequired()])
-    time = IntegerField('Prep Time (min)', widget=html5.NumberInput(min=1), validators=[NumberRange(min=1, message='Invalid Prep Time')])
-    servings = IntegerField('Servings', widget=html5.NumberInput(min=1, max=10), validators=[NumberRange(min=1, max=10, message='Invalid Servings')])
+    time = IntegerField('Prep Time (min)', widget=html5.NumberInput(min=1, max=360), validators=[NumberRange(min=1, max=360, message='Invalid Prep Time')])
+    servings = IntegerField('Servings', widget=html5.NumberInput(min=1, max=20), validators=[NumberRange(min=1, max=20, message='Invalid Servings')])
     rating = SelectField('Your Rating', choices=[('Not rated yet', 'Not rated yet'), ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')])
     notes = TextAreaField('Notes (Optional)', render_kw={'rows': 8})
     made = BooleanField('Did you make this dish?')
@@ -54,8 +54,8 @@ class CustomRecipeForm(FlaskForm):
 class CollectionForm(FlaskForm):
     """Form for creating a collection"""
 
-    name = StringField('Name of Collection (Ex. Pasta)', validators=[InputRequired()])
-    description = StringField('Description (Optional)')
+    name = StringField('Name of Collection (Ex. Pasta)', validators=[Length(min=1, max=20, message='Name cannot be more than 20 characters')])
+    description = StringField('Description (Optional)', validators=[Length(max=55, message='Description cannot be more than 55 characters')])
 
 
 

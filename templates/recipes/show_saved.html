@@ -41,23 +41,20 @@
             <input type="hidden" id="title" name="title" value="{{ title }}">
             <input type="hidden" id="image" name="image" value="{{ image }}">
             
-            {% for collection in g.user.collections %}
-                <input type="checkbox" value="{{ collection.id }}" id="{{ collection.id }}" 
-                {% if collection.name == "Favourites" %}checked{% endif %}
-                {% if collection in recipe.collections %}checked{% endif %} 
-                name="collections">
-                <label class="form-check-label" for="{{ collection.id }}">{{ collection.name }} </label>
-            {% endfor %}
+            <p>
+                {% for collection in g.user.collections %}
+                    <input type="checkbox" value="{{ collection.id }}" id="{{ collection.id }}" 
+                    {% if collection.name == "All" %}checked{% endif %}
+                    {% if collection in recipe.collections %}checked{% endif %} 
+                    name="collections">
+                    <label class="form-check-label" for="{{ collection.id }}">{{ collection.name }} </label>
+                {% endfor %}
+            </p>
             
             <p>
                 <button class="btn btn-info">Add</button>
             </p>
         </form>
-        {% else %}
-        <div>
-            You don't have any collections to add your recipe at the moment. 
-            <a href="/collections/new">Click here to make a new collection!</a>
-        </div>
                 
         {% endif %}
     {% endif %}
@@ -65,8 +62,12 @@
     
     {% if g.user and recipe %}
         <p>
-            Collections:
             {% if recipe.collections %}
+                {% if recipe.collections|length > 1 %}
+                    Collections:
+                {% else %}
+                    Collection:
+                {% endif %}
                 {% for collection in recipe.collections %}
                     <a href="/collections/show/{{ collection.id }}" class="badge bg-warning">{{ collection.name }}</a>
                 {% endfor %}
@@ -77,7 +78,7 @@
 
         <form method="POST" action="/recipes/remove/{{ recipe_id }}">
             <a href="/recipes/edit/{{ recipe_id }}" class="btn btn-secondary">Edit</a>
-            <button class="btn btn-info">Remove</button>
+            <button class="btn btn-info">Remove from Collections</button>
         </form>
     {% endif %}
 </p>
@@ -86,27 +87,47 @@
     <img src="{{ image }}">
 </p>
 
+<br>
+
 <p>
     <h3>Ingredients:</h3>
 
+    <small>
+        Measuring Unit: {{ g.user.measures }} (You can change your preference by clicking your username at the top right)
+    </small>
+
+    <p>
     {% for ing in ingredients %}
-        {% if g.user.measures == 'metric' %}
+        {% if g.user.measures == 'Metric' %}
         <div>
-        - {{ing['measures']['metric']['amount']}} 
-        {{ing['measures']['metric']['unitShort']}}
-        {{ ing['name'] }}
+
+            {% if ing['measures']['metric']['amount'] > 10 %}
+                - {{ (ing['measures']['metric']['amount']/10)|round|int * 10 }} 
+                {{ ing['measures']['metric']['unitShort'] }}
+                {{ ing['name'] }}
+
+            {% else %}
+                - {{ (ing['measures']['metric']['amount'])}} 
+                {{ ing['measures']['metric']['unitShort'] }}
+                {{ ing['name'] }}
+
+            {% endif %}
+
         </div>
         {% else %}
         <div>
-        - {{ing['measures']['us']['amount']}} 
-        {{ing['measures']['us']['unitShort']}}
-        {{ ing['name'] }}
+            - {{ ing['measures']['us']['amount'] }} 
+            {{ ing['measures']['us']['unitShort'] }}
+            {{ ing['name'] }}
         </div>
         {% endif %}
 
     {% endfor %}
+    </p>
 
 </p>
+
+<br>
 
 <p>
     <h3>Instructions:</h3>
@@ -128,7 +149,7 @@
 
 </p>
 
-
+<br> 
 
 <p>
     {% if g.user %}

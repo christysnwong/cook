@@ -2,38 +2,48 @@
 
 {% block content %}
 
-<h1>My Own Recipes</h1>
+<h1>
+    Own Recipes <a href="/recipes/custom/create"><i class="fa-solid fa-file-circle-plus"></i></a>
+</h1>
     {% if not custom_recipes %}
         <p>You haven't created any own recipes at the moment. </p>
         <p>
-            <a href="/recipes/custom/create">Make your own recipes now!</a>
+            <a href="/recipes/custom/create">Create your own recipes now!</a>
         </p>  
     {% else %}
-    <div class="row">
-        
-        {% for recipe in custom_recipes %}
-        <div class="col-3 my-5">
-            <p>
-                <a href="/recipes/custom/show/{{ recipe.id }}">
-                    <img src="{{ recipe.image_url }}" width="250px" height="190px">
-                </a>
-            </p>
-            <div>
-                <a href="/recipes/custom/show/{{ recipe.id }}">{{ recipe.title }}</a>
+        <p>
+            Sort by: Title
+        </p>
+        <div class="row">
+            
+            {% for recipe in custom_recipes %}
+            <div class="col-3 my-3">
+                <p>
+                    <a href="/recipes/custom/show/{{ recipe.id }}">
+                        <img src="{{ recipe.image_url }}" width="250px" height="190px">
+                    </a>
+                </p>
+                <div>
+                    <a href="/recipes/custom/show/{{ recipe.id }}"><b>{{ recipe.title }}</b></a>
+                    {% if recipe.made %}
+                        <i class="fa-solid fa-circle-check"></i> 
+                    {% endif %}
+                </div>
+                
+                <div>
+                    {% if recipe.rating != 'Not rated yet' %}
+                        {% for star in range(recipe.rating|int) %}
+                        <span><i class="fa-solid fa-star"></i></span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    Collection: <span class="badge bg-warning">{{ recipe.collection }}</span>
+                </div>
+                
             </div>
-            <div>
-                {% if recipe.rating != 'Not rated yet' %}
-                    {% for star in range(recipe.rating|int) %}
-                    <span><i class="fa-solid fa-star"></i></span>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <div>
-                <a href="/recipes/custom/show/own" class="badge bg-warning">{{ recipe.collection }}</a>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
     {% endif %}
 
 

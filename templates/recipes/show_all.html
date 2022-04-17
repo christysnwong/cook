@@ -2,60 +2,15 @@
 
 {% block content %}
 
-<!-- <h1>All Recipes</h1>
-
-    {% if not recipes %}
-        <p>You don't have any saved recipes at the moment. </p>
-    {% else %}
-    <div class="row">
-        
-        {% for recipe in recipes %}
-            {% if recipe.collection != 'Own' %}
-            <div class="col-3 my-5">
-                <p>
-                    <img src="{{ recipe.image_url }}" width="250px" height="190px">
-                </p>
-                <div>
-                    <a href="/recipes/show/{{ recipe.recipe_id }}">{{ recipe.title }}</a>
-                </div>
-                <div>
-                    {% if recipe.rating != 'Not rated yet' %}
-                        {% for star in range(recipe.rating|int) %}
-                        <span><i class="fa-solid fa-star"></i></span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-            {% else %}
-            
-            <div class="col-3 my-5">
-                <p>
-                    <img src="{{ recipe.image_url }}" width="250px" height="190px">
-                </p>
-                <div>
-                    <a href="/recipes/custom/show/{{ recipe.id }}">{{ recipe.title }}</a>
-                </div>
-                <div>
-                    {% if recipe.rating != 'Not rated yet' %}
-                        {% for star in range(recipe.rating|int) %}
-                        <span><i class="fa-solid fa-star"></i></span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-        {% endfor %}
-
-    </div>
-    {% endif %} -->
-
-
-<h1>My Saved Recipes</h1>
-    {% if not saved_recipes %}
+<h1>Saved Recipes</h1>
+    {% if not g.user.saved_recipes %}
         <p>You don't have any saved recipes at the moment. </p>
         <p>Search recipes at the top and add them to your favourites!</p>  
     {% else %}
-        {% if saved_recipes|length > 8 %}
+        <p>
+            Sort by: Last Added
+        </p>
+        {% if g.user.saved_recipes|length > 8 %}
         <p>
             <a href="/recipes/show/saved">See All</a>
         </p>
@@ -63,18 +18,17 @@
         <div class="row">
             
             {% for recipe in saved_recipes %}
-            <div class="col-3 my-5">
+            <div class="col-3 my-3">
                 <p>
                     <a href="/recipes/show/{{ recipe.recipe_id }}">
                         <img src="{{ recipe.image_url }}" width="250px" height="190px">
                     </a>
                 </p>
                 <div>
-                    <a href="/recipes/show/{{ recipe.recipe_id }}">{{ recipe.title }}</a>
+                    <a href="/recipes/show/{{ recipe.recipe_id }}"><b>{{ recipe.title }}</b></a>
                     {% if recipe.made %}
                         <i class="fa-solid fa-circle-check"></i> 
                     {% endif %}
-                    
                 </div>
                 <div>
                     {% if recipe.rating != 'Not rated yet' %}
@@ -85,6 +39,11 @@
                 </div>
                 <div>
                     {% if recipe.collections %}
+                        {% if recipe.collections|length > 1 %}
+                            Collections:
+                        {% else %}
+                            Collection:
+                        {% endif %}
                         {% for collection in recipe.collections %}
                             <a href="/collections/show/{{ collection.id }}" class="badge bg-warning">{{ collection.name }}</a>
                         {% endfor %}
@@ -98,14 +57,20 @@
 
 <hr>
 
-<h1>My Own Recipes</h1>
-    {% if not custom_recipes %}
+<h1>
+    Own Recipes <a href="/recipes/custom/create"><i class="fa-solid fa-file-circle-plus"></i></a>
+</h1>
+
+    {% if not g.user.custom_recipes %}
         <p>You haven't created any own recipes at the moment. </p>
         <p>
             <a href="/recipes/custom/create">Make your own recipes now!</a>
         </p>  
     {% else %}
-        {% if custom_recipes|length > 8 %}
+        <p>
+            Sort by: Last Added
+        </p>
+        {% if g.user.custom_recipes|length > 8 %}
         <p>
             <a href="/recipes/custom/show/own">See All</a>
         </p>
@@ -113,14 +78,14 @@
         <div class="row">
         
             {% for recipe in custom_recipes %}
-            <div class="col-3 my-5">
+            <div class="col-3 my-3">
                 <p>
                     <a href="/recipes/custom/show/{{ recipe.id }}">
                         <img src="{{ recipe.image_url }}" width="250px" height="190px">
                     </a>
                 </p>
                 <div>
-                    <a href="/recipes/custom/show/{{ recipe.id }}">{{ recipe.title }}</a>
+                    <a href="/recipes/custom/show/{{ recipe.id }}"><b>{{ recipe.title }}</b></a>
                     {% if recipe.made %}
                         <i class="fa-solid fa-circle-check"></i> 
                     {% endif %}
@@ -134,7 +99,7 @@
                     {% endif %}
                 </div>
                 <div>
-                    <a href="/recipes/show/own" class="badge bg-warning">{{ recipe.collection }}</a>
+                    Collection: <a href="/recipes/custom/show/own" class="badge bg-warning">{{ recipe.collection }}</a>
                 </div>
             </div>
             {% endfor %}

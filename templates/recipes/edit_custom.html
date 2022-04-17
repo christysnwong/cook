@@ -4,7 +4,8 @@
 
 <h1>Edit own's recipe</h1>
 
-<form method="POST">
+<p>
+  <form method="POST">
 
     {{ form.hidden_tag() }}
   
@@ -14,8 +15,6 @@
       {{ field.label }}
       {{ field(class_="form-control") }}
 
-
-  
       {% for error in field.errors %}
       <span class="form-text text-danger">{{ error }}</span>
       {% endfor %}
@@ -23,9 +22,10 @@
     {% endfor %}
   
     <a class="btn btn-secondary" href="/recipes/show/{{ recipe.id }}">Cancel</a>
-    <button class="btn btn-success" type="submit">Edit</button>
+    <button class="btn btn-success" type="submit">Save</button>
   
   </form>
+</p>
 
 
 {% endblock %}

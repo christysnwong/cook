@@ -1,9 +1,10 @@
 import os
 import requests
+import math
 
 from flask import Flask, render_template, request, flash, redirect, session, g, abort
 from flask_debugtoolbar import DebugToolbarExtension
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, PendingRollbackError
 
 
 from forms import UserForm, UserEditForm, LoginForm, SavedRecipeEditForm, CustomRecipeForm, CollectionForm
@@ -11,7 +12,8 @@ from models import db, connect_db, User, CustomRecipe, SavedRecipe, Collection
 
 app = Flask(__name__)
 
-key = '9e055b5f64f34fdabb8c20a3a2fa1ef8'
+key1 = '9e055b5f64f34fdabb8c20a3a2fa1ef8'
+key2 = '1078cbb8d35341d8bc2e994f794b463c'
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
@@ -32,7 +34,7 @@ connect_db(app)
 db.create_all()
 
 ##############################################################################
-# User signup/login/logout
+# User signup/login/logout routes
 
 @app.before_request
 def add_user_to_g():
@@ -55,6 +57,7 @@ def do_logout():
 
     if "CURR_USER" in session:
         del session["CURR_USER"]
+
 
 
 @app.route('/signup', methods=["GET", "POST"])
@@ -83,17 +86,19 @@ def signup():
             db.session.commit()
 
             collection = Collection(
-                name = "Favourites",
-                description = "Contains favourite recipes collected on Cooking Master",
+                name = "All",
+                description = "Contains all recipes collected on Cooking Master",
                 user_id = user.id
             )
 
             db.session.add(collection)
             db.session.commit()
 
+            flash("You are successfully registered!", 'success')
+
 
         except IntegrityError:
-            flash("Username already taken", 'danger')
+            flash("Username or Email Address is already in use", 'danger')
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -126,8 +131,8 @@ def login():
 def logout():
     """Handle logout of user."""
 
+    flash(f"Goodbye, {g.user.username}!", "info")
     do_logout()
-    flash("Goodbye!", "info")
     return redirect('/')
 
 
@@ -145,28 +150,35 @@ def users_show_recipes():
 
         # saved_recipes = user.saved_recipes
 
-        saved_recipes = SavedRecipe.query.filter(SavedRecipe.user_id == g.user.id).order_by(SavedRecipe.id.desc()).limit(4).all() 
+        saved_recipes = SavedRecipe.query.filter(SavedRecipe.user_id == g.user.id).order_by(SavedRecipe.id.desc()).limit(8).all() or None
 
-        custom_recipes = CustomRecipe.query.filter(CustomRecipe.user_id == g.user.id).order_by(CustomRecipe.id.desc()).limit(4).all() or None 
+        custom_recipes = CustomRecipe.query.filter(CustomRecipe.user_id == g.user.id).order_by(CustomRecipe.id.desc()).limit(8).all() or None 
 
         collections = user.collections
 
         # import pdb
         # pdb.set_trace()
 
-        return render_template('users/index.html',saved_recipes=saved_recipes, custom_recipes=custom_recipes, collections=collections)
+        return render_template('recipes/show_all.html',saved_recipes=saved_recipes, custom_recipes=custom_recipes, collections=collections)
 
     else:
-        return render_template('home-anon.html')
+        return render_template('home.html')
 
-
+##############################################################################
 # General user routes:
+
+@app.route('/users/guide')
+def show_guide():
+    """Show user's guide"""
+
+    return render_template('users/guide.html')
+
 
 @app.route('/users/<int:user_id>', methods=['GET', 'POST'])
 def users_profile_show(user_id):
     """Show user profile."""
 
-    if not g.user:
+    if g.user.id != user_id:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
@@ -190,17 +202,22 @@ def users_profile_edit(user_id):
         form = UserEditForm(obj=user)
 
         if form.validate_on_submit():
-            user.username = form.username.data
-            user.password = form.password.data
-            user.email = form.email.data
-            user.first_name = form.first_name.data
-            user.last_name = form.last_name.data
-            user.measures = form.measures.data
 
-            db.session.commit()
-            flash('User info is Editted!', 'success')
-            return redirect(f'/users/{user_id}')
-        
+            try:
+                user.username = form.username.data
+                user.email = form.email.data
+                user.first_name = form.first_name.data
+                user.last_name = form.last_name.data
+                user.measures = form.measures.data
+
+                db.session.commit() 
+                flash('Your profile is Editted!', 'success')
+                return redirect(f'/users/{user_id}')
+
+            except IntegrityError:
+                db.session.rollback() # why need to rollback here? if signup with same username, doesn't require to rollback
+                flash("Username or Email Address is already in use", 'danger')
+                
         return render_template('users/profile_edit.html', user=user, form=form)
 
 
@@ -218,12 +235,10 @@ def users_profile_delete(user_id):
         db.session.delete(user)
         db.session.commit()
         session.pop("CURR_USER")
-        flash(f'This user is successfully deleted.', 'success')
+        flash(f'This account is successfully deleted.', 'success')
 
         return redirect('/login')
 
-
-###################
 
 def users_update_exp(pts):
     """update experience points"""
@@ -240,10 +255,10 @@ def users_update_exp(pts):
 
 def users_update_lvl(user):
 
-    if user.exp > 10 and user.exp <= 20:
+    if user.exp > 4 and user.exp <= 10:
         user.title = "Amateur Cook"
 
-    if user.exp > 20 and user.exp <= 30:
+    if user.exp > 10 and user.exp <= 30:
         user.title = "Junior Cook"
 
     if user.exp > 30 and user.exp <= 60:
@@ -252,19 +267,20 @@ def users_update_lvl(user):
     if user.exp > 60:
         user.title = "Cooking Master"
 
+
 def users_cal_progress(user):
 
-    if user.exp <= 10:
-        progress = user.exp / 10 * 100
+    if user.exp <= 4:
+        progress = user.exp / 4 * 100
 
-    if user.exp > 10 and user.exp <= 20:
-        progress = user.exp / (20 - 10) * 100
+    if user.exp > 4 and user.exp <= 10:
+        progress = (user.exp - 4) / (10 - 4) * 100
 
-    if user.exp > 20 and user.exp <= 30:
-        progress = user.exp / (30 - 20) * 100
+    if user.exp > 10 and user.exp <= 30:
+        progress = (user.exp - 10) / (30 - 10) * 100
 
     if user.exp > 30 and user.exp <= 60:
-        progress = user.exp / (60 - 30) * 100
+        progress = (user.exp - 30) / (60 - 30) * 100
 
     if user.exp > 60:
         progress = 100
@@ -272,31 +288,52 @@ def users_cal_progress(user):
     return progress
 
 ##############################################################################
+# API calls for Recipes
 
-# API calls
-# Recipes
-
-@app.route('/recipes/search')
-def search_recipes():
-    """Search for recipes"""
+@app.route('/recipes/search/<int:pg_num>')
+def search_recipes(pg_num):
+    """Returns search results for recipes"""
 
     search = request.args.get('q')
 
-    resp = requests.get('https://api.spoonacular.com/recipes/complexSearch',
-        params={'apiKey': key, 'query': search, 'number': 4})
+    offset = 8 * (pg_num - 1)
 
-    if not search or not resp:
+    resp = requests.get('https://api.spoonacular.com/recipes/complexSearch',
+        params={'apiKey': key1, 'query': search, 'offset': offset, 'number': 8})
+
+
+    if 'code' in resp.json() and resp.json()['code'] == 402:
+
+        resp = requests.get('https://api.spoonacular.com/recipes/complexSearch',
+        params={'apiKey': key2, 'query': search, 'offset': offset, 'number': 8})
+
+        if 'code' in resp.json() and resp.json()['code'] == 402:
+
+            flash('Sorry the daily search limit has been reached. Please try again next day.', 'info')
+            return redirect('/')
+
+
+    if not search or not resp.json()['totalResults']:
         errors = 'Your search is invalid. Please try again.'
         return render_template('recipes/search.html', errors=errors)
-        
+    
     else:
         results = resp.json()['results']
         total_results = resp.json()['totalResults']
-        return render_template('recipes/search.html', search=search, results=results, total=total_results)
+
+        total_pg = math.ceil(total_results / 8)
+        curr_pg = pg_num
+
+        return render_template('recipes/search.html', search=search, results=results, total=total_results, curr_pg=curr_pg, total_pg=total_pg)
+
+    return render_template('recipes/search.html', search=search, results=results, total=total_results, curr_pg=curr_pg, total_pg=total_pg)
+
+##############################################################################
+# Saved & own recipes routes
 
 @app.route('/recipes/show/saved')
-def show_fav_recipes():
-    """Show all of user's favourite recipes"""
+def show_saved_recipes():
+    """Show all of user's saved recipes"""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -305,8 +342,8 @@ def show_fav_recipes():
     else:
 
         user = User.query.get_or_404(g.user.id)
-        # saved_recipes = user.saved_recipes
         saved_recipes = SavedRecipe.query.filter(SavedRecipe.user_id == user.id).order_by(SavedRecipe.title).all() or None
+
 
         return render_template('recipes/show_all_saved.html', saved_recipes=saved_recipes)
 
@@ -316,7 +353,18 @@ def show_recipe(recipe_id):
     """Show details of a recipe"""
 
     resp = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information',
-        params={'apiKey': key})
+        params={'apiKey': key1})
+
+    if 'code' in resp.json() and resp.json()['code'] == 402:
+       
+        resp = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information',
+        params={'apiKey': key2})
+
+        if 'code' in resp.json() and resp.json()['code'] == 402:
+
+            flash('Sorry the daily search limit has been reached. Please try again next day.', 'info')
+            return redirect('/recipes/show/saved')
+
 
     title = resp.json()["title"]
     image = resp.json()["image"]
@@ -329,16 +377,10 @@ def show_recipe(recipe_id):
         user_id = g.user.id
         recipe = SavedRecipe.query.filter(SavedRecipe.user_id == user_id, SavedRecipe.recipe_id == recipe_id).first()
 
-        
-        # print("###########")
-        # print(recipe)
-        # import pdb
-        # pdb.set_trace()
-
     else:
         recipe = None
 
-    return render_template('recipes/show.html', recipe_id=recipe_id, title=title, image=image, servings=servings, time=time, ingredients=ingredients,instructions=instructions, recipe=recipe)
+    return render_template('recipes/show_saved.html', recipe_id=recipe_id, title=title, image=image, servings=servings, time=time, ingredients=ingredients,instructions=instructions, recipe=recipe)
 
 
 @app.route('/recipes/add/<int:recipe_id>', methods=['POST'])
@@ -355,6 +397,7 @@ def add_recipe(recipe_id):
     collection_ids = [int(num) for num in request.form.getlist("collections")]
     
     if len(collection_ids) == 0:
+        flash("This recipe is not added to any collections", 'warning')
         return redirect(f'/recipes/show/{recipe_id}')
 
    
@@ -368,19 +411,16 @@ def add_recipe(recipe_id):
     saved_recipe_ids = [recipe.recipe_id for recipe in g.user.saved_recipes]
 
     if recipe_id in saved_recipe_ids:
-        flash("This recipe is already added to your favourite", 'danger')
+        flash("This recipe is already added to your collection", 'danger')
 
     else:
         recipe.collections = Collection.query.filter(Collection.id.in_(collection_ids)).all()
-        users_update_exp(10)
+        users_update_exp(1)
 
         db.session.add(recipe)
         db.session.commit()
-        flash(f'This recipe is successfully added to your favourite.', 'success')
+        flash('This recipe is successfully added to your collection(s)', 'success')
     
-    # import pdb
-    # pdb.set_trace()
-
     return redirect(f'/recipes/show/{recipe_id}')
 
 
@@ -438,7 +478,12 @@ def edit_recipe(recipe_id):
             if len(recipe.collections) == 0:
                 db.session.delete(recipe)
                 flash(f'The info of this recipe is removed from all of your collections.', 'success')
+            
             else:
+
+                if recipe.made == True:
+                    users_update_exp(5)
+
                 flash(f'The info of this recipe is successfully editted.', 'success')
 
             db.session.commit()
@@ -446,7 +491,7 @@ def edit_recipe(recipe_id):
             
             return redirect(f'/recipes/show/{recipe_id}')
 
-        return render_template('recipes/edit.html', form=form, recipe=recipe, recipe_id=recipe_id, collections=collections)
+        return render_template('recipes/edit_saved.html', form=form, recipe=recipe, recipe_id=recipe_id, collections=collections)
 
 
 @app.route('/recipes/custom/create', methods=['GET', 'POST'])
@@ -477,11 +522,16 @@ def create_own_recipe():
                 user_id = user_id
             )
 
+            if form.made.data == True:
+                users_update_exp(9)
+            else:
+                users_update_exp(4)
+
             db.session.add(recipe)
             db.session.commit()
 
             flash(f'Your recipe is created!', 'success')
-            return redirect('/')
+            return redirect('/recipes/custom/show/own')
         
         return render_template('recipes/create.html', form=form)
 
@@ -496,13 +546,11 @@ def show_own_recipes():
     else:
 
         user = User.query.get_or_404(g.user.id)
-        # custom_recipes = user.custom_recipes
         custom_recipes = CustomRecipe.query.filter(CustomRecipe.user_id == user.id).order_by(CustomRecipe.title).all() or None
 
         return render_template('recipes/show_all_own.html',custom_recipes=custom_recipes)
 
-
-    
+   
 
 @app.route('/recipes/custom/show/<int:recipe_id>')
 def show_own_recipe(recipe_id):
@@ -519,11 +567,6 @@ def show_own_recipe(recipe_id):
         if recipe == None:
             flash(f'You have to be the owner of this recipe to view this', 'danger')
             return redirect('/')
-
-        # print("###########")
-        # print(recipe)
-        # import pdb
-        # pdb.set_trace()
 
         return render_template('recipes/show_custom.html', recipe=recipe)
 
@@ -558,6 +601,9 @@ def edit_own_recipe(recipe_id):
             recipe.made = form.made.data
             recipe.image_url = form.image_url.data or CustomRecipe.image_url.default.arg
         
+            if recipe.made == True:
+                users_update_exp(5)
+
             db.session.commit()
 
             flash(f'Your recipe is successfully editted!', 'success')
@@ -589,6 +635,9 @@ def delete_own_recipe(recipe_id):
 
         return redirect('/')
 
+##############################################################################
+# Collection routes
+
 @app.route('/collections/show')
 def show_collections():
     """Show user's list of collections"""
@@ -599,9 +648,7 @@ def show_collections():
 
     else:
         user = g.user
-        # collections = user.collections
-        # collections = Collection.query.order_by(Collection.name).all()
-        collections = Collection.query.filter(Collection.user_id == user.id, Collection.name == 'Favourites').all() + Collection.query.filter(Collection.user_id == user.id, Collection.name != 'Favourites').order_by(Collection.name).all()
+        collections = Collection.query.filter(Collection.user_id == user.id, Collection.name == 'All').all() + Collection.query.filter(Collection.user_id == user.id, Collection.name != 'All').order_by(Collection.name).all()
 
         return render_template('collections/show.html', collections=collections)
 
@@ -618,9 +665,6 @@ def show_collection_in_details(collection_id):
         collection = Collection.query.filter(Collection.user_id == user_id, Collection.id == collection_id).first()
         recipes = collection.saved_recipes
 
-        # import pdb
-        # pdb.set_trace()
-
         if collection == None:
             flash(f'This collection does not exist or cannot be accessed by you.', 'danger')
             return redirect('/collections/show')
@@ -632,13 +676,21 @@ def show_collection_in_details(collection_id):
 def add_collection():
     """Show a form to create a collection folder"""
 
+
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
     else:
+        collections = Collection.query.filter(Collection.user_id == g.user.id).all()
+        collections_names = [collection.name for collection in collections]
+
         form = CollectionForm()
 
+        if len(collections) > 14:
+            flash(f'Sorry you have already reached the maximum number of collection folders you can store.', 'danger')
+            return redirect('/collections/show')
+   
         if form.validate_on_submit():
 
             collection = Collection(
@@ -646,9 +698,16 @@ def add_collection():
                 description = form.description.data,
                 user_id = g.user.id
             )
+
+            if collection.name in collections_names:
+                flash(f'You have a collection that has the same name "{collection.name}" already', 'warning')
+                return redirect('/collections/new')
+
+            users_update_exp(1)
             
             db.session.add(collection)
             db.session.commit()
+            flash('This collection is successfully added', 'info')
 
             return redirect('/collections/show')
 
@@ -671,7 +730,12 @@ def edit_collection(collection_id):
 
         if collection == None:
             flash(f'You have to be the owner of this recipe to edit this', 'danger')
-            return redirect('/')
+            return redirect('/collections/show')
+
+        if collection.name == "All":
+            flash(f'This collection cannot be editted', 'danger')
+            return redirect('/collections/show')
+
 
         if form.validate_on_submit():
 
@@ -679,7 +743,7 @@ def edit_collection(collection_id):
             collection.description = form.description.data
 
             db.session.commit()
-            flash(f'The name of this collection is successfully editted', 'success')
+            flash('The name of this collection is successfully editted', 'success')
 
             return redirect('/collections/show')
         
@@ -702,7 +766,8 @@ def delete_collection(collection_id):
             flash(f'This collection does not exist or cannot be accessed by you.', 'danger')
             return redirect('/collections/show')
 
-        if collection.name == "Favourites":
+        
+        if collection.name == "All":
             flash(f'This collection cannot be deleted.', 'danger')
             return redirect('/collections/show')
 
@@ -729,109 +794,3 @@ def add_header(req):
     req.headers["Expires"] = "0"
     req.headers['Cache-Control'] = 'public, max-age=0'
     return req
-
-
-
-# print("##################")
-# print(resp.json()['id'])
-# for ing in resp.json()["extendedIngredients"]:
-#     print(ing["name"])
-
-# print("##################")
-
-# print("##################")
-# print("##################")
-# for item in resp.json()["analyzedInstructions"]:
-#     print (item['name'])
-#     for step in item['steps']:
-#         print (step['number'])
-#         print (step['step'])
-
-
-
-
-# search for a specific recipe
-
-# https://api.spoonacular.com/recipes/{id}/information
-# get title, image_url, servings, ingredients
-
-# resp.data.extendedIngredients
-## extendedIngredients[0].name
-## .measures
-
-
-# ?apiKey=9e055b5f64f34fdabb8c20a3a2fa1ef8
-
-# example
-# https://api.spoonacular.com/recipes/716429/information?apiKey=YOUR-API-KEY&includeNutrition=true
-# https://api.spoonacular.com/recipes/324694/information?apiKey=YOUR-API-KEY&includeNutrition=true
-
-# 663209
-
-# testing
-# resp = requests.get('https://api.spoonacular.com/recipes/716429/information?apiKey=9e055b5f64f34fdabb8c20a3a2fa1ef8&includeNutrition=false')
-
-# import pdb
-# pdb.set_trace()
-
-# print("##################")
-# print(resp.json()['id'])
-# for ing in resp.json()["extendedIngredients"]:
-#     print(ing["name"])
-
-# print("##################")
-
-# print("##################")
-# print("##################")
-# for item in resp.json()["analyzedInstructions"]:
-#     print (item['name'])
-#     for step in item['steps']:
-#         print (step['number'])
-#         print (step['step'])
-
-
-# test 2
-# searching recipes
-# resp = requests.get('https://api.spoonacular.com/recipes/complexSearch?apiKey=9e055b5f64f34fdabb8c20a3a2fa1ef8&query=pasta&number=3')
-
-# for item in resp.json()['results']:
-#     print(item['title'])
-#     print(item['image'])
-
-
-# testing 3
-# search analyzed instructions - not needed
-# resp = requests.get('https://api.spoonacular.com/recipes/324694/analyzedInstructions?apiKey=9e055b5f64f34fdabb8c20a3a2fa1ef8&stepBreakdown=false')
-
-# import pdb
-# pdb.set_trace()
-
-# len(resp.json()) # of big steps - 2
-
-# len(resp.json()[0]['steps']) # number of substeps in Step 1
-
-# print(resp.json()[0]['name']) # step 1 name
-# print(resp.json()[0]['steps'][0]['number']) # step 1 - substep 1
-# print(resp.json()[0]['steps'][0]['step']) # step 1 - substep 1 preheat oven...
-
-# print(resp.json()[1]['name']) # step 2 name
-# print(resp.json()[1]['steps'][0]['number']) # step 2 - substep 1
-# print(resp.json()[1]['steps'][0]['step']) # step 2 - substep 2 combine...
-
-
-# print("##################")
-# print("##################")
-
-# for item in resp.json():
-#     print (item['name'])
-#     for step in item['steps']:
-#         print (step['number'])
-#         print (step['step'])
-
-# print("##################")
-# print("##################")
-
-
-
-
-##############################################################################

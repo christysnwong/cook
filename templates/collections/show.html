@@ -2,20 +2,51 @@
 
 {% block content %}
 
-<h2>My Collections</h2>
+<h1>
+    My Collections <a href="/collections/new"><i class="fa-solid fa-file-circle-plus"></i></a>
+</h1>
 
 
 <div class="row">
+    {% if g.user.custom_recipes %}
+    <div class="col-3">
+        
+        <div class="card my-4" style="width: 16rem; height: 15rem">
+            <div class="card-body">
+                <h5 class="card-title text-info">
+                    <a href="/recipes/custom/show/own">Own</a>
+                    
+                </h5>
+                <hr>
+
+                <p class="card-text">
+                    Contains my own recipes created on Cooking Master
+                </p>
+
+                <p>
+                    Recipes: {{ g.user.custom_recipes|length }}
+                </p>
+
+                <p>
+                    <a href="#" class="btn btn-sm btn-info disabled" role="button" aria-disabled="true"><i class="fas fa-pen-alt"></i></a>
+                    <a href="#" class="btn btn-sm btn-danger disabled"role="button" aria-disabled="true"><i class="fas fa-trash"></i></a>
+                </p>
+                
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {% for collection in collections %}
     <div class="col-3">
         
-        <div class="card my-4" style="width: 16rem;">
+        <div class="card my-4" style="width: 16rem; height: 15rem">
             <div class="card-body">
                 <h5 class="card-title text-info">
                     <a href="/collections/show/{{ collection.id }}">{{ collection.name }}</a>
                     
                 </h5>
-
+                <hr>
                 <p class="card-text">
                     {{ collection.description }}
                 </p>
@@ -24,13 +55,18 @@
                     Recipes: {{ collection.saved_recipes|length }}
                 </p>
                 
-                {% if collection.name != "Favourites" %}
+                {% if collection.name != "All" %}
                 <form style="display:inline;" action="/collections/delete/{{ collection.id }}" method="POST">
                     
-                    <a href="/collections/edit/{{ collection.id }}" class="btn btn-sm btn-info"><i class="fas fa-pen-alt"></i></a>
+                    <a href="/collections/edit/{{ collection.id }}" class="btn btn-sm btn-info "><i class="fas fa-pen-alt"></i></a>
                     <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                     
                 </form>
+                {% else %}
+                    
+                    <a href="#" class="btn btn-sm btn-info disabled" role="button" aria-disabled="true"><i class="fas fa-pen-alt"></i></a>
+                    <a href="#" class="btn btn-sm btn-danger disabled"role="button" aria-disabled="true"><i class="fas fa-trash"></i></a>
+
                 {% endif %}
 
             </div>
@@ -38,7 +74,6 @@
     </div>
     {% endfor %}
 </div>
-
 
 
 {% endblock %}

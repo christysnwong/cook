@@ -2,9 +2,15 @@
 
 {% block content %}
 
+{% if g.user.collections|length > 14 %}
+
+  <p>Sorry you have already reached the maximum number of collection folders you can store.</p>
+
+{% else %}
+
 <h1>Create you own collections of recipes!</h1>
 
-<form method="POST">
+  <form method="POST">
 
     {{ form.hidden_tag() }}
   
@@ -27,5 +33,6 @@
   
   </form>
 
+{% endif %}
 
 {% endblock %}

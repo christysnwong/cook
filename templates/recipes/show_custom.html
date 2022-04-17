@@ -25,10 +25,14 @@
 </p>
 
 <p>
+    Collection: <a href="/recipes/custom/show/own" class="badge bg-warning">Own</a>
+</p>
+
+<p>
     {% if g.user.id == recipe.user_id %}
     <form method="POST" action="/recipes/custom/delete/{{ recipe.id }}">
         <a href="/recipes/custom/edit/{{ recipe.id }}" class="btn btn-secondary">Edit</a>
-        <button class="btn btn-danger">Delete</button>
+        <button class="btn btn-danger">Delete Recipe</button>
     </form>
     {% endif %}
 </p>
@@ -37,11 +41,15 @@
     <img src="{{ recipe.image_url }}">
 </p>
 
+<br>
+
 <p>
     <h3>Ingredients:</h3>
     <p style="white-space: pre-wrap;">{{ recipe.ingredients }}</p>
 
 </p>
+
+<br>
 
 <p>
     <h3>Instructions:</h3>
@@ -49,7 +57,7 @@
 
 </p>
 
-
+<br>
 
 <p>
     <h3>Your Notes:</h3>

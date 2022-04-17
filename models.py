@@ -69,6 +69,14 @@ class User(db.Model):
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
+
+    custom_recipes = db.relationship('CustomRecipe', backref='user', cascade = "all,delete-orphan")
+    
+    saved_recipes = db.relationship('SavedRecipe', backref='user', cascade = "all,delete-orphan")
+    
+    collections = db.relationship('Collection', backref='user', cascade = "all,delete-orphan")
+
+
     @classmethod
     def signup(cls, username, password, email, first_name, last_name, measures, exp, title):
         """Register user with hashed password"""
@@ -176,7 +184,7 @@ class CustomRecipe(db.Model):
         nullable=False
     )
 
-    user = db.relationship('User', backref='custom_recipes')
+    # user = db.relationship('User', backref='custom_recipes', cascade="all,delete")
 
 
 class SavedRecipe(db.Model):
@@ -230,7 +238,7 @@ class SavedRecipe(db.Model):
         nullable=False
     )
 
-    user = db.relationship('User', backref='saved_recipes')
+    # user = db.relationship('User', backref='saved_recipes', cascade="all,delete")
 
     collections = db.relationship('Collection', 
         secondary='collection_recipes',
@@ -251,7 +259,7 @@ class Collection(db.Model):
         nullable=False       
     )
 
-    description = db.Column(db.Text,
+    description = db.Column(db.String(50),
         nullable=True
     )
 
@@ -261,10 +269,10 @@ class Collection(db.Model):
         nullable=False
     )
 
-    user = db.relationship('User', backref='collections')
+    # user = db.relationship('User', backref='collections', cascade="all,delete")
 
     def __repr__(self):
-        return f"<Tag id={self.id} name={self.name}>"
+        return f"<Collection id={self.id} name={self.name}>"
 
 
 class CollectionRecipes(db.Model):
@@ -273,12 +281,12 @@ class CollectionRecipes(db.Model):
     __tablename__ = 'collection_recipes'
 
     collection_id = db.Column(db.Integer,
-        db.ForeignKey('collections.id'),
+        db.ForeignKey('collections.id', ondelete='cascade'),
         primary_key=True
     )
 
     recipe_id = db.Column(db.Integer,
-        db.ForeignKey('saved_recipes.id'),
+        db.ForeignKey('saved_recipes.id', ondelete='cascade'),
         primary_key=True    
     )
 

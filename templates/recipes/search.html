@@ -10,27 +10,53 @@
 
 {% if results %} 
     <p>
-        Your search: {{ search }}
+        Your Search: {{ search }}
     </p>
     <p>
-        Total results: {{ total }}
+        Results Found: {{ total }}
+    </p>
+    <p>
+        Current Page: {{ curr_pg }} / {{ total_pg }}
     </p>
     
     <div class="row">
         {% for item in results %}
         <div class="col-3 my-5">
             <p>
-                <img src="{{ item['image'] }}" width="250px" height="190px">
+                <a href="/recipes/show/{{ item['id'] }}"><img src="{{ item['image'] }}" width="250px" height="190px"></a>
             </p>
             <p>
-                <a href="/recipes/show/{{ item['id'] }}">{{ item['title'] }}</a>
+                <a href="/recipes/show/{{ item['id'] }}"><b>{{ item['title'] }}</b></a>
             </p>
         </div>
         {% endfor %}
     </div>
- 
+
+    <p>
+
+        <form>
+            <input type="hidden" id="more_search" name="q" value="{{ search }}">
+        
+            {% if curr_pg > 1 %}
+                <button class="btn btn-primary"
+                    formaction="/recipes/search/{{ curr_pg - 1 }}"
+                    formmethod="GET">Previous</button>
+            {% endif %}
+        
+            {% if curr_pg < total_pg %}
+                <button class="btn btn-primary"
+                formaction="/recipes/search/{{ curr_pg + 1 }}"
+                formmethod="GET">Next</button>
+            {% endif %}
+        
+        </form>
+
+    </p>
+
     
 
 {% endif %}
 
 {% endblock %}
+
+
