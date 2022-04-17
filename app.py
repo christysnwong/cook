@@ -146,18 +146,10 @@ def users_show_recipes():
     if g.user:
         
         user = User.query.get_or_404(g.user.id)
-        # recipes = user.saved_recipes + user.custom_recipes
-
-        # saved_recipes = user.saved_recipes
 
         saved_recipes = SavedRecipe.query.filter(SavedRecipe.user_id == g.user.id).order_by(SavedRecipe.id.desc()).limit(8).all() or None
-
         custom_recipes = CustomRecipe.query.filter(CustomRecipe.user_id == g.user.id).order_by(CustomRecipe.id.desc()).limit(8).all() or None 
-
         collections = user.collections
-
-        # import pdb
-        # pdb.set_trace()
 
         return render_template('recipes/show_all.html',saved_recipes=saved_recipes, custom_recipes=custom_recipes, collections=collections)
 
@@ -215,7 +207,7 @@ def users_profile_edit(user_id):
                 return redirect(f'/users/{user_id}')
 
             except IntegrityError:
-                db.session.rollback() # why need to rollback here? if signup with same username, doesn't require to rollback
+                db.session.rollback() 
                 flash("Username or Email Address is already in use", 'danger')
                 
         return render_template('users/profile_edit.html', user=user, form=form)
@@ -288,7 +280,7 @@ def users_cal_progress(user):
     return progress
 
 ##############################################################################
-# API calls for Recipes
+# API call for searching recipes
 
 @app.route('/recipes/search/<int:pg_num>')
 def search_recipes(pg_num):
@@ -437,18 +429,18 @@ def remove_recipe(recipe_id):
         recipe = SavedRecipe.query.filter(SavedRecipe.user_id == user_id, SavedRecipe.recipe_id == recipe_id).first()
 
         if recipe == None:
-            flash(f'This recipe is not in your favourite.', 'danger')
+            flash(f'This recipe is not in any of your collections.', 'danger')
             return redirect(f'/recipes/show/{recipe_id}')
 
         db.session.delete(recipe)
         db.session.commit()
-        flash(f'This recipe is successfully removed from your favourite.', 'success')
+        flash(f'This recipe is successfully removed from your collection(s)', 'success')
 
         return redirect(f'/recipes/show/{recipe_id}')
 
 @app.route('/recipes/edit/<int:recipe_id>', methods=['GET','POST'])
 def edit_recipe(recipe_id):
-    """Edit recipe's rating and notes from user's favourites"""
+    """Edit recipe's rating and notes"""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -477,7 +469,7 @@ def edit_recipe(recipe_id):
 
             if len(recipe.collections) == 0:
                 db.session.delete(recipe)
-                flash(f'The info of this recipe is removed from all of your collections.', 'success')
+                flash(f'This recipe is removed from all of your collections.', 'success')
             
             else:
 
@@ -663,11 +655,12 @@ def show_collection_in_details(collection_id):
     else:
         user_id = g.user.id
         collection = Collection.query.filter(Collection.user_id == user_id, Collection.id == collection_id).first()
-        recipes = collection.saved_recipes
 
         if collection == None:
             flash(f'This collection does not exist or cannot be accessed by you.', 'danger')
             return redirect('/collections/show')
+        else:
+            recipes = collection.saved_recipes
 
         return render_template('collections/show_details.html', collection=collection, recipes=recipes)
 
@@ -780,10 +773,6 @@ def delete_collection(collection_id):
 
 ##############################################################################
 # Turn off all caching in Flask
-#   (useful for dev; in production, this kind of stuff is typically
-#   handled elsewhere)
-#
-# https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
 
 @app.after_request
 def add_header(req):

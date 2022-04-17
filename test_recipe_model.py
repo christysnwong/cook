@@ -112,19 +112,5 @@ class RecipeModelTestCase(TestCase):
         self.assertEqual(self.testuser1.saved_recipes[1].user_id, self.testuser1.id)
 
 
-    def test_collection_model(self):
-         
-        collection = Collection(
-            name="My Most Fav",
-            description="My most favourites recipes",
-            user_id=self.testuser1.id
-        )
-
-        db.session.add(collection)
-        db.session.commit()
-
-        self.assertEqual(self.testuser1.collections[0].name, "My Most Fav")
-        self.assertEqual(self.testuser1.collections[0].description, "My most favourites recipes")
-        self.assertEqual(self.testuser1.collections[0].user_id, self.testuser1.id)
 
 
