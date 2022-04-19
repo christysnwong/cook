@@ -6,6 +6,8 @@ from sqlalchemy import exc
 
 from models import db, User, CustomRecipe, SavedRecipe, Collection, CollectionRecipes
 
+# changed to postgres as Heroku's DATABASE_URL always start with postgres
+# app.py will replace postgres with postgresql
 os.environ['DATABASE_URL'] = "postgres:///cook-test"
 
 from app import app
