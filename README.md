@@ -1,16 +1,13 @@
 # Cooking Master
+[Check it out on Heroku!](https://cw-cooking-master.herokuapp.com)
 
 #### Introduction
 
-During the pandemic, there were a lot of restrictions imposed on both the restaurants and diners. People didn’t have too many options but to either buy take-out or learn how to cook on their own.  
+During the pandemic, dining options became limited due to restictions imposed on the restaurants. People had to buy take-out or learn how to cook on their own. 
 
-My website will help users to search and add recipes to their favorites.  Users will also be able to create and customize their own recipes.
-The website will target the people who are either running out of ideas or struggling to find recipes for their meals.
+The site targets home cooks who are running out of ideas or looking for new dishes to make for their meals. Users can search and add recipes to their collections.  Users will also be able to create and customize their own recipes.
 
-One of the issues include not being able to extract information from the API as the allowable daily quota from the free plan is exceeded. 
-Sensitive information includes user’s personal data such as names, usernames, passwords and email.
-
-Users will have the ability to create, edit and save their own recipes other than finding and adding recipes to their collections. 
+Cooking Master utilizes the powerful Spoonacular API that enables site users to search and view thousands of recipes. One of the potential issues include not being able to extract information from the API as the allowable daily quota from the free plan is exceeded. 
 
 #### Database Schema
 
@@ -27,12 +24,14 @@ Users will have the ability to create, edit and save their own recipes other tha
 
 #### User Flow
 
-* Visitors can sign in, register or search recipes on the homepage
+* Visitors can search recipes but cannot save them
+* Visitors can either register for an account or sign in to use all the site featurs
 * Users can see their saved recipes and own recipes after they log in
+* Users can search and add recipes to their collection
 * Users can create their own recipes
-* Users can remove any saved recipes from their collections
+* Users can add more collections to categorize their saved recipes
 
 #### Tools
 
 * API - Spoonacular
-* Others - Python, Flask, SQLAlchemy, WTForms, HTML, CSS, and JavaScript
+* Others - Python, Flask, SQLAlchemy, WTForms, HTML, and CSS
