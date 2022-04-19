@@ -6,7 +6,7 @@ from sqlalchemy import exc
 
 from models import db, connect_db, User, CustomRecipe, SavedRecipe, Collection, CollectionRecipes
 
-os.environ['DATABASE_URL'] = "postgresql:///cook-test"
+os.environ['DATABASE_URL'] = "postgres:///cook-test"
 
 from app import app
 

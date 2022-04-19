@@ -5,6 +5,7 @@ import math
 from flask import Flask, render_template, request, flash, redirect, session, g, abort
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError, PendingRollbackError
+from apikeys import key1, key2
 
 
 from forms import UserForm, UserEditForm, LoginForm, SavedRecipeEditForm, CustomRecipeForm, CollectionForm
@@ -12,8 +13,6 @@ from models import db, connect_db, User, CustomRecipe, SavedRecipe, Collection
 
 app = Flask(__name__)
 
-key1 = '9e055b5f64f34fdabb8c20a3a2fa1ef8'
-key2 = '1078cbb8d35341d8bc2e994f794b463c'
 
 
 
