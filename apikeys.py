@@ -1,0 +1,2 @@
+key1 = '9e055b5f64f34fdabb8c20a3a2fa1ef8'
+key2 = '1078cbb8d35341d8bc2e994f794b463c'
