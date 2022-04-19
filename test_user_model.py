@@ -10,6 +10,7 @@ os.environ['DATABASE_URL'] = "postgresql:///cook-test"
 
 from app import app
 
+db.drop_all()
 db.create_all()
 
 
@@ -19,8 +20,9 @@ class UserModelTestCase(TestCase):
     def setUp(self):
         """Create test client, add sample data."""
 
-        db.drop_all()
-        db.create_all()
+        # db.drop_all()
+        # db.create_all()
+        User.query.delete()
 
         testuser1 = User.signup(username="testuser1",
                                 password="testuser1",
@@ -51,9 +53,12 @@ class UserModelTestCase(TestCase):
 
         db.session.commit()
 
-        testuser1 = User.query.get(1)
-        testuser2 = User.query.get(2)
-        testuser3 = User.query.get(3)
+        # testuser1 = User.query.get(1)
+        # testuser2 = User.query.get(2)
+        # testuser3 = User.query.get(3)
+        testuser1 = db.session.refresh(testuser1)
+        testuser2 = db.session.refresh(testuser2)
+        testuser3 = db.session.refresh(testuser3)
 
         self.testuser1 = testuser1
         self.testuser2 = testuser2
@@ -99,7 +104,10 @@ class UserModelTestCase(TestCase):
                         exp=None,
                         title=None)
 
-        testuser4 = User.query.get(4)
+        db.session.commit()
+
+        # testuser4 = User.query.get(4)
+        testuser4 = db.session.refresh(testuser4)
 
         self.assertIsNotNone(testuser4)
         self.assertEqual(testuser4.username, "testuser4")

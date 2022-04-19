@@ -1,7 +1,6 @@
 import os
 import requests
 import math
-import re
 
 from flask import Flask, render_template, request, flash, redirect, session, g, abort
 from flask_debugtoolbar import DebugToolbarExtension
@@ -16,17 +15,14 @@ app = Flask(__name__)
 key1 = '9e055b5f64f34fdabb8c20a3a2fa1ef8'
 key2 = '1078cbb8d35341d8bc2e994f794b463c'
 
-# Resolve Heroku issues not being able to connect with >= SQLAlchemy 1.4x
-uri = os.getenv("DATABASE_URL")  # or other relevant config var
-if uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
-# rest of connection code using the connection string `uri`
+
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
-app.config['SQLALCHEMY_DATABASE_URI'] = (
+app.config["SQLALCHEMY_DATABASE_URI"] = 
+    os.environ.get('DATABASE_URL', "postgres:///cook").replace("://", "ql://", 1)
     # os.environ.get('DATABASE_URL', 'postgresql:///cook'))
-    os.environ.get(uri, 'postgresql:///cook'))
+    
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
