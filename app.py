@@ -34,7 +34,7 @@ app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 app.config['TESTING'] = False
 connect_db(app)
 # db.drop_all()
-db.create_all()
+# db.create_all()
 
 ##############################################################################
 # User signup/login/logout routes
