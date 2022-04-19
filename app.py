@@ -19,8 +19,7 @@ key2 = '1078cbb8d35341d8bc2e994f794b463c'
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
-app.config["SQLALCHEMY_DATABASE_URI"] = 
-    os.environ.get('DATABASE_URL', "postgres:///cook").replace("://", "ql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', "postgres:///cook").replace("://", "ql://", 1)
     # os.environ.get('DATABASE_URL', 'postgresql:///cook'))
     
 
