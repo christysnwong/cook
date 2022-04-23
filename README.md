@@ -45,16 +45,22 @@ Prerequisites: Ensure that pip, python and git are already installed on your com
     * $ cd NAME_OF_DIRECTORY
 3. Git-clone and download the files from github:
     * $ git clone https://github.com/christysnwong/cook.git
-4. Start by creating a virtual environment in the project folder:
+4. Create a file called apikeys.py
+5. Visit [https://spoonacular.com/food-api](https://spoonacular.com/food-api) 
+6. Register and get an API key
+7. In apikeys.py, put in the following
+    * key1 = YOUR_API_KEY_FROM_SPOONACULAR
+    * key2 = ''
+8. Back to your terminal, creating a virtual environment in the project folder:
     * $ python3 -m venv venv
-5. Go to virtual environment:
+9. Go to virtual environment:
     * $ source venv/bin/activate 
-6. Check the command line and ensure that it starts with (venv)
-7. Install all the programs required for this project:
+10. Check the command line and ensure that it starts with (venv)
+11. Install all the programs required for this project:
     * $ pip freeze > requirements.txt
-8. To run the server on the local host:
+12. To run the server on the local host:
     * $ flask run
-9. Check out this project on your localhost IP address
+13. Check out this project on your localhost IP address
 
 #### Testing
 
