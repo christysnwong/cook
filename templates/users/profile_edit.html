@@ -2,6 +2,9 @@
 
 {% block content %}
 
+<div class="row row-cols-2">
+  <div class="col">
+
     <h1>Edit User's Info</h1>
 
     <form method="POST" id="user_form">
@@ -23,10 +26,12 @@
         
 
         <div class="edit-btn-area">
-          <button class="btn btn-success">Edit this user!</button>
+          <button class="btn btn-success">Save</button>
           <a href="/users/{{ user.id }}" class="btn btn-outline-secondary">Cancel</a>
         </div>
     </form>
+  </div>
+</div>
 
 
     

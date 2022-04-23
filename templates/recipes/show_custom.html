@@ -31,7 +31,7 @@
 <p>
     {% if g.user.id == recipe.user_id %}
     <form method="POST" action="/recipes/custom/delete/{{ recipe.id }}">
-        <a href="/recipes/custom/edit/{{ recipe.id }}" class="btn btn-secondary">Edit</a>
+        <a href="/recipes/custom/edit/{{ recipe.id }}" class="btn btn-secondary">Edit Recipe</a>
         <button class="btn btn-danger">Delete Recipe</button>
     </form>
     {% endif %}

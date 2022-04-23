@@ -35,7 +35,7 @@ class SavedRecipeEditForm(FlaskForm):
 
     rating = SelectField('Your Rating', choices=[('Not rated yet', 'Not rated yet'), ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')])
     notes = TextAreaField('Notes - Optional', render_kw={'rows': 8})
-    made = BooleanField('Did you make this dish?')
+    # made = BooleanField('Did you make this dish?')
 
 class CustomRecipeForm(FlaskForm):
     """Form for creating own recipe"""
@@ -47,8 +47,8 @@ class CustomRecipeForm(FlaskForm):
     servings = IntegerField('Servings', widget=html5.NumberInput(min=1, max=20), validators=[NumberRange(min=1, max=20, message='Invalid Servings')])
     rating = SelectField('Your Rating', choices=[('Not rated yet', 'Not rated yet'), ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')])
     notes = TextAreaField('Notes (Optional)', render_kw={'rows': 8})
-    made = BooleanField('Did you make this dish?')
     image_url = StringField('Image URL (Optional)') 
+    # made = BooleanField('Did you make this dish?')
 
 
 class CollectionForm(FlaskForm):

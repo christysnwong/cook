@@ -7,14 +7,14 @@
 </h1>
 
 
-<div class="row">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
     {% if g.user.custom_recipes %}
-    <div class="col-3">
-        
-        <div class="card my-4" style="width: 16rem; height: 15rem">
+    <div class="col">
+
+        <div class="card my-3" style="width: 16rem; height: 15rem">
             <div class="card-body">
                 <h5 class="card-title text-info">
-                    <a href="/recipes/custom/show/own">Own</a>
+                    <a href="/recipes/custom/show/own">Own Recipes</a>
                     
                 </h5>
                 <hr>
@@ -38,9 +38,9 @@
     {% endif %}
 
     {% for collection in collections %}
-    <div class="col-3">
+    <div class="col">
         
-        <div class="card my-4" style="width: 16rem; height: 15rem">
+        <div class="card my-3" style="width: 16rem; height: 15rem">
             <div class="card-body">
                 <h5 class="card-title text-info">
                     <a href="/collections/show/{{ collection.id }}">{{ collection.name }}</a>

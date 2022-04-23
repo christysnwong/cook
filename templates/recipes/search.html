@@ -19,9 +19,9 @@
         Current Page: {{ curr_pg }} / {{ total_pg }}
     </p>
     
-    <div class="row">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
         {% for item in results %}
-        <div class="col-3 my-5">
+        <div class="col my-3">
             <p>
                 <a href="/recipes/show/{{ item['id'] }}"><img src="{{ item['image'] }}" width="250px" height="190px"></a>
             </p>

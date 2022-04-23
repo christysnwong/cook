@@ -19,85 +19,91 @@
 
 <body>
 
-  <nav class="navbar fixed-top navbar-expand-md navbar-light bg-info">
+  <nav class="navbar fixed-top navbar-expand-md navbar-dark bg-info">
     <div class="container">
-      <a href="/" class="navbar-brand text-light title">Cooking Master</a>
+      <a href="/" class="navbar-brand text-light"><b>Cooking Master</b></a>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbarToggler1" aria-controls="navbarToggler1" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
       
-      <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-          <ul class="navbar-nav mr-auto">
+      <div class="navbar-collapse collapse navbarToggler1 order-2 order-md-1">
+        <ul class="navbar-nav mr-auto">
 
-            <li class="nav-item">
-              <a class="nav-link pr-3 text-light" href="/users/guide">Guide</a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link pr-3 text-light" href="/users/guide">Guide</a>
+          </li>
 
-            {% if g.user %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle pr-3 text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Recipes
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                
-                <a class="dropdown-item" href="/recipes/custom/create">Create a Recipe</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/">All Recipes</a>
+          {% if g.user %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle pr-3 text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Recipes
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              
+              <a class="dropdown-item" href="/recipes/custom/create">Create a Recipe</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/">All Recipes</a>
 
-                <a class="dropdown-item" href="/recipes/show/saved">Saved Recipes</a>
-                <a class="dropdown-item" href="/recipes/custom/show/own">Own Recipes</a>
+              <a class="dropdown-item" href="/recipes/show/saved">Saved Recipes</a>
+              <a class="dropdown-item" href="/recipes/custom/show/own">Own Recipes</a>
 
-              </div>
-            </li>
-            
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle pr-3 text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Collections
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                
-                <a class="dropdown-item" href="/collections/new">Add a collection</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/collections/show">My Collections</a>
+            </div>
+          </li>
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle pr-3 text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Collections
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              
+              <a class="dropdown-item" href="/collections/new">Add a collection</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/collections/show">My Collections</a>
 
-                <!-- {% for collection in g.user.collections %}
-                  <a class="dropdown-item" href="/collections/show/{{ collection.id }}">{{ collection.name }}</a>
-                {% endfor %} -->
-              </div>
-            </li>
-            {% endif %}
-          </ul>
+            </div>
+          </li>
+          {% endif %}
+        </ul>
       </div>
-      
 
-      <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-          <ul class="navbar-nav ml-auto">
+      <div class="navbar-collapse collapse navbarToggler1 order-1 order-md-2">
 
-              {% if request.endpoint != None %}
-              <li class="nav-item mx-3">
-                <form class="navbar-form form-inline navbar-right" action="/recipes/search/1">
+        <ul class="navbar-nav ml-auto">
+
+          {% if request.endpoint != None %}
+          <li class="nav-item mx-3">
+            
+              <form class="navbar-form" action="/recipes/search/1">
+                <div class="input-group">
                   <input name="q" class="form-control" placeholder="Search Recipe" id="search">
-                  <!-- <button class="btn btn-default">
-                    <span class="fa fa-search"></span>
-                  </button> -->
-                </form>
-              </li>
-              {% endif %}
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-light">
+                      <i class="fa fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+          </li>
+          {% endif %}
 
-              {% if g.user %}
-              <li class="nav-item">
-                <a class="nav-link pr-3 text-light" href="/users/{{ g.user.id }}"> {{ g.user.username }} </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link pr-3 text-light" href="/logout"> Logout</a>
-              </li>
-              {% else %}
-              <li class="nav-item">
-                <a class="nav-link pr-3 text-light" href="/login">Login</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link pr-3 text-light" href="/signup">Sign up</a>
-              </li>
-              {% endif %}
+          {% if g.user %}
+          <li class="nav-item">
+            <a class="nav-link pr-3 text-light" href="/users/{{ g.user.id }}"> {{ g.user.username }} </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link pr-3 text-light" href="/logout"> Logout</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link pr-3 text-light" href="/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link pr-3 text-light" href="/signup">Sign up</a>
+          </li>
+          {% endif %}
 
-          </ul>
+        </ul>
       </div>
     </div>
   </nav>

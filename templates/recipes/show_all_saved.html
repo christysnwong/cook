@@ -10,11 +10,11 @@
         <p>
             Sort by: Title
         </p>
-        <div class="row">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
             
             {% for recipe in saved_recipes %}
                 
-            <div class="col-3 my-3">
+            <div class="col my-3">
                 <p>
                     <a href="/recipes/show/{{ recipe.recipe_id }}">
                         <img src="{{ recipe.image_url }}" width="250px" height="190px">
@@ -26,14 +26,14 @@
                         <i class="fa-solid fa-circle-check"></i> 
                     {% endif %}
                 </div>
-                <div>
+                <div class="form-group">
                     {% if recipe.rating != 'Not rated yet' %}
                         {% for star in range(recipe.rating|int) %}
                         <span><i class="fa-solid fa-star"></i></span>
                         {% endfor %}
                     {% endif %}
                 </div>
-                <div>
+                <div class="form-group">
                     {% if recipe.collections %}
                         {% if recipe.collections|length > 1 %}
                             Collections:
@@ -46,6 +46,7 @@
                     {% endif %}
 
                 </div>
+
             </div>
             {% endfor %}
             

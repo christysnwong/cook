@@ -4,24 +4,31 @@
 
 <h1>Login</h1>
 <p>Don't have an account? <a href="/signup">Register here</a></p>
+
 <br>
-<form method="POST">
 
-  {{ form.hidden_tag() }}
+<div class="row row-cols-2">
+  <div class="col">
 
-  {% for field in form
-    if field.widget.input_type != 'hidden' %}
-  <p>
-    {{ field.label }}
-    {{ field(class_="form-control") }}
+    <form method="POST">
 
-    {% for error in field.errors %}
-    <span class="form-text text-danger">{{ error }}</span>
-    {% endfor %}
-  </p>
-  {% endfor %}
+      {{ form.hidden_tag() }}
 
-  <button class="btn btn-success" type="submit">Login</button>
+      {% for field in form
+        if field.widget.input_type != 'hidden' %}
+      <p>
+        {{ field.label }}
+        {{ field(class_="form-control") }}
 
-</form>
+        {% for error in field.errors %}
+        <span class="form-text text-danger">{{ error }}</span>
+        {% endfor %}
+      </p>
+      {% endfor %}
+
+      <button class="btn btn-success" type="submit">Login</button>
+
+    </form>
+  </div>
+</div>
 {% endblock %}

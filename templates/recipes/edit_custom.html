@@ -20,9 +20,19 @@
       {% endfor %}
     </p>
     {% endfor %}
-  
-    <a class="btn btn-secondary" href="/recipes/show/{{ recipe.id }}">Cancel</a>
+
+    <p>Have you made this dish?</p>
+    <div class="form-group">
+      <div class="custom-control custom-checkbox">
+        <input class="custom-control-input" type="checkbox" id="made" name="made">
+        <label class="custom-control-label" for="made">Yes</label>
+      </div>
+
+    </div>
+    
     <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/recipes/custom/show/{{ recipe.id }}">Cancel</a>
+    
   
   </form>
 </p>

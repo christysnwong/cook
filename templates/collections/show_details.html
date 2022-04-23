@@ -20,15 +20,75 @@
                 </a>
             </p>
             <div>
-                <a href="/recipes/show/{{ recipe.recipe_id }}">{{ recipe.title }}</a>
-            </div>
-            <div>
+                <a href="/recipes/show/{{ recipe.recipe_id }}"><b>{{ recipe.title }}</b></a>
+                {% if recipe.made %}
+                    <i class="fa-solid fa-circle-check"></i> 
+                {% endif %}
+        </div>
+            <div class="form-group">
                 {% if recipe.rating != 'Not rated yet' %}
                     {% for star in range(recipe.rating|int) %}
                     <span><i class="fa-solid fa-star"></i></span>
                     {% endfor %}
                 {% endif %}
             </div>
+            <div class="form-group">
+                {% if recipe.collections %}
+                    {% if recipe.collections|length > 1 %}
+                        Collections:
+                    {% else %}
+                        Collection:
+                    {% endif %}
+                    {% for collection in recipe.collections %}
+                        <a href="/collections/show/{{ collection.id }}" class="badge bg-warning">{{ collection.name }}</a>
+                    {% endfor %}
+                {% endif %}
+
+            </div>
+            <div class="form-group">
+
+                <a data-toggle="collapse" href="#colform-{{ recipe.recipe_id }}" aria-expanded="false" aria-controls="colform-{{ recipe.recipe_id }}" class="btn btn-sm btn-info ">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </a>
+
+                <form style="display:inline;" action="/collections/recipe/remove/{{ recipe.recipe_id }}/{{ collection.id }}" method="POST">
+                    
+                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                    
+                </form>
+               
+
+            </div>
+
+            <div class="form-group">
+                
+                <form class="collapse" id="colform-{{ recipe.recipe_id }}" method="POST" action="/collections/recipe/edit/{{ recipe.recipe_id }}/{{ collection.id }}">
+                    
+                    <div class="form-group">
+                        {% for collection in collections %}
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input class="custom-control-input" type="checkbox" value="{{ collection.id }}" id="{{ recipe.recipe_id }}-{{ collection.id }}" 
+                                {% if collection in recipe.collections %}checked{% endif %} 
+                                name="collections">
+                                <label class="custom-control-label" for="{{ recipe.recipe_id }}-{{ collection.id }}"> {{ collection.name }}</label>
+                            </div>
+        
+                        {% endfor %}
+                    </div>       
+                    
+                    <button class="btn btn-info">Edit</button>
+        
+                </form>
+
+
+            </div>
+
+            
+
+
+
+
+
         </div>
         {% endfor %}
         

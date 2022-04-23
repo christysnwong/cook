@@ -20,18 +20,34 @@
     </p>
     {% endfor %}
 
-    <p>
-      <p>Your Collections</p>
-      {% for collection in collections %}
-      <input type="checkbox" value="{{ collection.id }}" id="{{ collection.id }}" 
-      {% if collection in recipe.collections %}checked{% endif %} 
-      name="collections">
-      <label class="form-check-label" for="{{ collection.id }}">{{ collection.name }} </label>
-      {% endfor %}
-    </p>
-  
-    <a class="btn btn-secondary" href="/recipes/show/{{ recipe_id }}">Cancel</a>
+    <p>Have you made this dish?</p>
+    <div class="form-group">
+      <div class="custom-control custom-checkbox">
+        <input class="custom-control-input" type="checkbox" id="made" 
+        {% if recipe.made == True %}checked{% endif %} 
+        name="made">
+        <label class="custom-control-label" for="made">Yes</label>
+      </div>
+
+
+    </div>
+
+    <p>Collections:</p>
+      <div class="form-group">
+        {% for collection in collections %}
+          <div class="custom-control custom-checkbox custom-control-inline">
+            <input class="custom-control-input" type="checkbox" value="{{ collection.id }}" id="{{ collection.id }}" 
+            {% if collection.name == "All" %}checked{% endif %}
+            {% if collection in recipe.collections %}checked{% endif %} 
+            name="collections">
+            <label class="custom-control-label" for="{{ collection.id }}">{{ collection.name }} </label>
+          </div>
+        {% endfor %}
+    </div>
+    
     <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/recipes/show/{{ recipe_id }}">Cancel</a>
+    
   
   </form>
 

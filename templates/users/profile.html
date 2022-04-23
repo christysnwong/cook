@@ -67,14 +67,14 @@
     </p>
 
     <form>
+        <button class="btn btn-primary"
+            formaction="/users/{{ user.id }}/edit"
+            formmethod="GET">Edit My Profile
+        </button>
         <button class="btn btn-danger"
                 formaction="/users/{{ user.id }}/delete"
                 formmethod="POST">Delete Account
         </button>
-        <button class="btn btn-primary"
-            formaction="/users/{{ user.id }}/edit"
-            formmethod="GET">Edit My Profile
-    </button>
     </form>
 
 
