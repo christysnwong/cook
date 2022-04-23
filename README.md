@@ -51,7 +51,7 @@ Prerequisites: Ensure that pip, python and git are already installed on your com
 7. In apikeys.py, put in the following
     * key1 = YOUR_API_KEY_FROM_SPOONACULAR
     * key2 = ''
-8. Back to your terminal, creating a virtual environment in the project folder:
+8. Back to your terminal, create a virtual environment in the project folder:
     * $ python3 -m venv venv
 9. Go to virtual environment:
     * $ source venv/bin/activate 
