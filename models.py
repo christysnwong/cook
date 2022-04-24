@@ -242,6 +242,7 @@ class SavedRecipe(db.Model):
 
     collections = db.relationship('Collection', 
         secondary='collection_recipes',
+        order_by='Collection.name',
         backref='saved_recipes')
 
 
