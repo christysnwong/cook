@@ -34,11 +34,11 @@ Cooking Master utilizes the powerful Spoonacular API that enables site users to 
 #### Tools
 
 * API - Spoonacular
-* Others - Python, Flask, SQLAlchemy, WTForms, HTML, and CSS
+* Others - Python, Flask, PostgreSQL, SQLAlchemy, WTForms, HTML, and CSS
 
 #### Set up
 
-Prerequisites: Ensure that pip, python and git are already installed on your computer.
+Prerequisites: Ensure that Pip, Python, PostgreSQL and git are already installed on your computer.
 
 1. Make a new directory for this project
 2. On your terminal, go to the directory that you just created
@@ -58,9 +58,11 @@ Prerequisites: Ensure that pip, python and git are already installed on your com
 10. Check the command line and ensure that it starts with (venv)
 11. Install all the programs required for this project:
     * $ pip install -r requirements.txt
-12. To run the server on the local host:
+12. Ensure that PostgreSQL is already up and running. If not, start it up by typing
+    * $ sudo service postgresql start 
+13. To run the server on the local host:
     * $ flask run
-13. Check out this project on your localhost IP address
+14. Check out this project on your localhost IP address (typically http://localhost:3000)
 
 #### Testing
 
