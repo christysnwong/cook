@@ -366,14 +366,13 @@ def show_recipe(recipe_id):
 	time = resp.json()["readyInMinutes"]
 	ingredients = resp.json()["extendedIngredients"]
 	instructions = resp.json()["analyzedInstructions"]
+	collections = None
+	recipe = None
 
 	if g.user:
 		user_id = g.user.id
 		recipe = SavedRecipe.query.filter(SavedRecipe.user_id == user_id, SavedRecipe.recipe_id == recipe_id).first()
 		collections = Collection.query.filter(Collection.user_id == user_id).order_by(Collection.name).all()
-
-	else:
-		recipe = None
 
 	return render_template('recipes/show_saved.html', recipe_id=recipe_id, title=title, image=image, servings=servings, time=time, ingredients=ingredients,instructions=instructions, recipe=recipe, collections=collections)
 
